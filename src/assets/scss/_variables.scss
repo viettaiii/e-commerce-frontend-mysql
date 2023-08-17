@@ -1,0 +1,64 @@
+// WHITE AND GRAY
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+// COLORS
+$black: #141414;
+$blue: #0d6efd;
+$red: #bf1e2e;
+
+
+// SOCIAL-COLORS
+$social-colors: (
+  twitter: #2caae1,
+  facebook: #3b579d,
+  google: #dc4a38,
+  linkedin: #0177b5,
+  pinterest: #cc2127,
+  youtube: #e52d27,
+  github: #333333,
+  behance: #1769ff,
+  dribbble: #ea4c89,
+  reddit: #ff4500,
+);
+
+// THEME-COLORS
+$theme-colors: (
+  primary: $black,
+  secondary: $red,
+  success: #1bcfb4,
+  info: #198ae3,
+  warning: #fed713,
+  danger: #fe7c96,
+  light: #f8f9fa,
+  dark: #3e4b5b,
+);
+
+$theme-gradient-colors: (
+  primary: linear-gradient(to right, #14141485,#141414),
+  secondary: linear-gradient(to right,  #bf1e2e89, #bf1e2e),
+  success: linear-gradient(to right, #84d9d2, #07cdae),
+  info: linear-gradient(to right, #90caf9, #047edf 99%),
+  warning: linear-gradient(to right, #f6e384, #ffd500),
+  danger: linear-gradient(to right, #ffbf96, #fe7096),
+  light: linear-gradient(to bottom, #f4f4f4, #e4e4e9),
+  dark: linear-gradient(89deg, #5e7188, #3e4b5b),
+);
+
+// Buttons
+$button-fixed-width:        150px;
+$btn-font-size: 0.875rem;
+$btn-font-size-xs: 0.625rem;
+$btn-font-size-sm: 0.875rem;
+$btn-font-size-md: 1rem;
+$btn-font-size-lg: 1.25rem;
+
+@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
