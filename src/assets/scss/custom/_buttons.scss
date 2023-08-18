@@ -1,0 +1,34 @@
+.btn {
+  font-size: $btn-font-size;
+  color: $white;
+  &.btn-xs {
+    font-size: $btn-font-size-xs;
+  }
+  &.btn-sm {
+    font-size: $btn-font-size-sm;
+  }
+  &.btn-md {
+    font-size: $btn-font-size-md;
+  }
+  &.btn-lg {
+    font-size: $btn-font-size-lg;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    background-color: $value;
+    color: $white;
+    &:hover {
+      color: $white;
+    }
+  }
+  .btn-outline-#{$color} {
+    border: 1px solid $value;
+    color: $black;
+
+    &:hover {
+      color: $white;
+    }
+  }
+}
