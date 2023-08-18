@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 const sidebarMenu = [
   {
@@ -15,11 +14,11 @@ const sidebarMenu = [
     subItems: [
       {
         text: "Products",
-        to: "/products",
+        to: "/admin/products",
       },
       {
         text: "Categories",
-        to: "/categories",
+        to: "/admin/categories",
       },
     ],
   },
@@ -50,6 +49,7 @@ function Sidebar() {
               <span className={item.icon}></span>
             </span>
             {createNav(item)}
+
             {item.iconRight && (
               <motion.span
                 animate={key === idxShow ? { rotate: 90 } : { rotate: 0 }}
@@ -60,15 +60,17 @@ function Sidebar() {
               </motion.span>
             )}
           </div>
-          {item.iconRight && key === idxShow && (
-            <motion.ul className="sub-items">
-              {item.subItems.map((subItem, keySub) => (
-                <li key={keySub}>
-                  <Link to={subItem.to}>{subItem.text}</Link>
-                </li>
-              ))}
-            </motion.ul>
-          )}
+          <AnimatePresence>
+            {item.iconRight && key === idxShow && (
+              <motion.ul key={key} className="sub-items">
+                {item.subItems.map((subItem, keySub) => (
+                  <li key={keySub}>
+                    <Link to={subItem.to}>{subItem.text}</Link>
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </>
       );
     });
