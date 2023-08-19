@@ -15,7 +15,6 @@ $black: #141414;
 $blue: #0d6efd;
 $red: #bf1e2e;
 
-
 // SOCIAL-COLORS
 $social-colors: (
   twitter: #2caae1,
@@ -43,8 +42,8 @@ $theme-colors: (
 );
 
 $theme-gradient-colors: (
-  primary: linear-gradient(to right, #14141485,#141414),
-  secondary: linear-gradient(to right,  #bf1e2e89, #bf1e2e),
+  primary: linear-gradient(to right, #14141485, #141414),
+  secondary: linear-gradient(to right, #bf1e2e89, #bf1e2e),
   success: linear-gradient(to right, #84d9d2, #07cdae),
   info: linear-gradient(to right, #90caf9, #047edf 99%),
   warning: linear-gradient(to right, #f6e384, #ffd500),
@@ -54,12 +53,22 @@ $theme-gradient-colors: (
 );
 
 // Buttons
-$button-fixed-width:        150px;
+$button-fixed-width: 120px;
 $btn-font-size: 0.875rem;
-$btn-font-size-xs: 0.625rem;
-$btn-font-size-sm: 0.875rem;
-$btn-font-size-md: 1rem;
-$btn-font-size-lg: 1.25rem;
+$btn-py-xs: 0.1rem;
+$btn-px-xs: 0.625rem;
+
+$btn-py-sm: 0.2rem;
+$btn-px-sm: 1.2rem;
+
+$btn-py-md: 0.275rem;
+$btn-px-md: 1.4rem;
+
+$btn-py-lg: 0.325rem;
+$btn-px-lg: 1.6rem;
+
+$btn-py-xl: 0.475rem;
+$btn-px-xl: 1.8rem;
 
 
 // ICONS SIZES
@@ -72,4 +81,39 @@ $icons-sizes: (
   xl: 2rem,
 );
 
+//ROTATES
+$rotates: (
+  -45: -45deg,
+  -90: -90deg,
+  -180: -190deg,
+  -360: -360deg,
+  45: 45deg,
+  90: 90deg,
+  180: 190deg,
+  360: 360deg,
+);
+
+// SPACER
+$spacer: 1rem;
+$spacers: (
+  -1: -($spacer * 0.25),
+  -2: -($spacer * 0.5),
+  -3: -($spacer),
+  -4: -($spacer * 1.5),
+  -5: -($spacer * 3),
+  -6: -($spacer * 0.25),
+  -7: -($spacer * 0.5),
+  -8: -($spacer),
+  -9: -($spacer * 1.5),
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 0.25,
+  7: $spacer * 0.5,
+  8: $spacer,
+  9: $spacer * 1.5
+);
 @import "../../../node_modules/bootstrap/scss/bootstrap.scss";

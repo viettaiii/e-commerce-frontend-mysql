@@ -2,16 +2,26 @@
   font-size: $btn-font-size;
   color: $white;
   &.btn-xs {
-    font-size: $btn-font-size-xs;
+    padding: $btn-py-xs $btn-px-xs;
   }
   &.btn-sm {
-    font-size: $btn-font-size-sm;
+    padding: $btn-py-sm $btn-px-sm;
   }
   &.btn-md {
-    font-size: $btn-font-size-md;
+    padding: $btn-py-md $btn-px-md;
+    font-size: calc($btn-font-size + 0.05rem);
   }
   &.btn-lg {
-    font-size: $btn-font-size-lg;
+    padding: $btn-py-lg $btn-px-lg;
+    font-size: calc($btn-font-size + 0.1rem);
+  }
+  &.btn-xl {
+    padding: $btn-py-xl $btn-px-xl;
+    font-size: calc($btn-font-size + 0.3rem);
+  }
+  &.btn-icon {
+    @include flex-gap($gap: 8px);
+    align-items: center;
   }
 }
 
