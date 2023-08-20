@@ -47,6 +47,19 @@ const optionsPrice = [
   },
 ];
 function ListProduct() {
+  // REACT
+  const [product, setProduct] = useState({
+    name: "",
+    price: 0,
+    description: "",
+    discount: 0,
+    categoryId: "",
+    providerId: "",
+  });
+
+  const [productItems, setProductItems] = useState([
+    { qtyInStock: 0, image: null, colorId: "", isSpecial: false },
+  ]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -249,6 +262,22 @@ function ListProduct() {
                       <option hidden>Màu SP</option>
                       {createOptionColor(colors)}
                     </Form.Select>
+                  </Col>
+                  <Col xl="1" className="d-flex align-items-center">
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 150, hide: 200 }}
+                      overlay={
+                        <Tooltip id="button-tooltip">
+                          Mô tả: Sản phẩm đặc biệt liên hể để mua
+                        </Tooltip>
+                      }
+                    >
+                      <Form.Check // prettier-ignore
+                        type="switch"
+                        name="isSpecial"
+                      />
+                    </OverlayTrigger>
                   </Col>
                   <Col>
                     <div>
