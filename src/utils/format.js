@@ -18,10 +18,9 @@ export const formatDate = (time) => {
       Dec: "12",
     }[a[1]] +
     "/" +
-    a[3] +
-    " " +
-    a[4]
+    a[3]
   );
 };
 
-
+export const formatCurrency = (x) =>
+  x.toLocaleString("it-IT", { style: "currency", currency: "VND" });
