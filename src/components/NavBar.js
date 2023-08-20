@@ -16,10 +16,10 @@ function NavBar() {
       </div>
       <div className="right">
         <div className="item">
-          <span class="mdi mdi-moon-waning-crescent icon-md"></span>
+          <span className="mdi mdi-moon-waning-crescent icon-md"></span>
         </div>
         <div className="item">
-          <span class="mdi mdi-bell icon-md"></span>
+          <span className="mdi mdi-bell icon-md"></span>
           <span className="text">10</span>
         </div>
         <Dropdown className="item">
