@@ -1,19 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
+  Col,
   Container,
   Form,
   Image,
   OverlayTrigger,
   Pagination,
+  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/product/productSlice";
 import { getCategories } from "../../features/category/categorySlice";
+import { getProviders } from "../../features/provider/providerSlice";
+import { getColors } from "../../features/color/colorSlice";
 import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
+import OffcanvasFrame from "../../components/OffcanvasFrame";
 
 const optionsPrice = [
   {
@@ -30,15 +35,15 @@ const optionsPrice = [
   },
   {
     title: "Ngày tạo cũ nhất",
-    value: "createdAt",
+    value: "-createdAt",
   },
   {
     title: "Ngày sửa mới đây",
-    value: "update",
+    value: "updatedAt",
   },
   {
     title: "Ngày sửa cũ nhất",
-    value: "update",
+    value: "-updatedAt",
   },
 ];
 function ListProduct() {
@@ -50,10 +55,17 @@ function ListProduct() {
   useEffect(() => {
     dispatch(getCategories());
   }, [dispatch]);
-
+  useEffect(() => {
+    dispatch(getProviders());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getColors());
+  }, [dispatch]);
   // STORE REDUX
   const { products, perPage, total } = useSelector((store) => store.product);
   const { categories } = useSelector((store) => store.category);
+  const { providers } = useSelector((store) => store.provider);
+  const { colors } = useSelector((store) => store.color);
 
   // TẠO STATUS
   const createStatus = (inventoryCount) => {
@@ -131,6 +143,27 @@ function ListProduct() {
     });
   };
 
+  // TẠO OPTION PROVIDER
+  const createOptionProvider = (providers) => {
+    return providers.map((provider) => {
+      return (
+        <option key={provider.id} value={provider.id}>
+          {provider.providerName}
+        </option>
+      );
+    });
+  };
+  // TẠO OPTION COLOR
+  const createOptionColor = (colors) => {
+    return colors.map((color) => {
+      return (
+        <option key={color.id} value={color.id}>
+          {color.value}
+        </option>
+      );
+    });
+  };
+
   // Tạo options price
   const createOptionPrice = (optionsPrice) => {
     return optionsPrice.map((option) => {
@@ -141,8 +174,102 @@ function ListProduct() {
       );
     });
   };
+
+  // BUTTION OffcanvasFrame
+
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   return (
     <Container className="products">
+      <OffcanvasFrame
+        show={show}
+        title={"Thêm mới sản phẩm"}
+        handleClose={handleClose}
+        className="w-40"
+      >
+        <span className="text-success text-md">Thông tin</span>
+        <hr />
+        <Form>
+          <Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tên</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Tên sản phẩm..."
+                name="name"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Giá</Form.Label>
+              <Form.Control type="text" placeholder="Giá" name="price" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Mô tả </Form.Label>
+              <Form.Control type="text" placeholder="Giá" name="description" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>% Sales</Form.Label>
+              <Form.Control type="text" placeholder="%Sales" name="discount" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Loại</Form.Label>
+              <Form.Select name="categoryId">
+                <option hidden>Loại</option>
+                {createOptionCategory(categories)}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Nhà cung cấp</Form.Label>
+              <Form.Select name="providerId">
+                <option hidden>Nhà cung cấp</option>
+                {createOptionProvider(providers)}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label className="text-success">Sản phẩm con</Form.Label>
+              <Form.Group>
+                <Row>
+                  <Col>
+                    <Form.Control
+                      type="number"
+                      placeholder="Số lượng"
+                      name="qtyInStock"
+                    />
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="file"
+                      name="image"
+                      placeholder="Chọn ảnh"
+                    />
+                  </Col>
+                  <Col>
+                    <Form.Select name="colorId">
+                      <option hidden>Màu SP</option>
+                      {createOptionColor(colors)}
+                    </Form.Select>
+                  </Col>
+                  <Col>
+                    <div>
+                      <Button variant="success">Thêm</Button>
+                      <Button variant="danger ms-1">Xóa</Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Form.Group>
+          </Form.Group>
+          <div className="mt-4">
+            <Button variant="success btn-xl" type="submit">
+              Thêm mới
+            </Button>
+            <Button variant="outline-danger ms-3 btn-xl" type="submit">
+              Hủy
+            </Button>
+          </div>
+        </Form>
+      </OffcanvasFrame>
       <h4 className="py-4">
         <strong>Products</strong>
       </h4>
@@ -162,7 +289,7 @@ function ListProduct() {
             <span className="mdi mdi-trash-can-outline icon-md "></span>
             <span>Xóa SP</span>
           </Button>
-          <Button variant="success btn-xl btn-icon ms-2">
+          <Button variant="success btn-xl btn-icon ms-2" onClick={handleShow}>
             <span className="mdi mdi-plus icon-md "></span>
             <span>Thêm SP</span>
           </Button>
@@ -173,14 +300,21 @@ function ListProduct() {
         <div className="w-100">
           <Form.Control type="text" placeholder="Tìm kiếm sản phẩm..." />
         </div>
-        <div className="w-100">
+        <div className="w-100 ms-1">
           <Form.Select>
             <option hidden>Loại</option>
             <option value="all">All</option>
             {createOptionCategory(categories)}
           </Form.Select>
         </div>
-        <div className="w-100">
+        <div className="w-100 ms-1">
+          <Form.Select>
+            <option hidden>Nhà cung cấp</option>
+            <option value="all">All</option>
+            {createOptionProvider(providers)}
+          </Form.Select>
+        </div>
+        <div className="w-100 ms-1">
           <Form.Select>
             <option hidden>Giá</option>
             <option value="all">All</option>
