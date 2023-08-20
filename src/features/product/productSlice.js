@@ -3,6 +3,10 @@ import { getProductsAsync, createProductAsync } from "./productThunk";
 import { toast } from "react-toastify";
 const initialState = {
   products: [],
+  page: 1,
+  perPage: 6,
+  totalPages: 1,
+  total: 2,
   isLoading: false,
   isError: false,
 };
@@ -32,6 +36,11 @@ const productSlice = createSlice({
     builder.addCase(getProducts.fulfilled, (state, action) => {
       state.isLoading = state.isError = false;
       state.products = action.payload.data;
+   
+      state.page = action.payload.page;
+      state.perPage = action.payload.perPage;
+      state.totalPages = action.payload.totalPages;
+      state.total = action.payload.total;
     });
     builder.addCase(getProducts.rejected, (state, action) => {
       state.isLoading = state.isError = true;

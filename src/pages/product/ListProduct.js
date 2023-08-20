@@ -15,6 +15,32 @@ import { getCategories } from "../../features/category/categorySlice";
 import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
 
+const optionsPrice = [
+  {
+    title: "Thấp đến Cao",
+    value: "price",
+  },
+  {
+    title: "Cao đến Thấp",
+    value: "-price",
+  },
+  {
+    title: "Ngày tạo mới đây",
+    value: "createdAt",
+  },
+  {
+    title: "Ngày tạo cũ nhất",
+    value: "createdAt",
+  },
+  {
+    title: "Ngày sửa mới đây",
+    value: "update",
+  },
+  {
+    title: "Ngày sửa cũ nhất",
+    value: "update",
+  },
+];
 function ListProduct() {
   const dispatch = useDispatch();
 
@@ -26,7 +52,7 @@ function ListProduct() {
   }, [dispatch]);
 
   // STORE REDUX
-  const { products } = useSelector((store) => store.product);
+  const { products, perPage, total } = useSelector((store) => store.product);
   const { categories } = useSelector((store) => store.category);
 
   // TẠO STATUS
@@ -93,6 +119,28 @@ function ListProduct() {
       );
     });
   };
+
+  // TẠO OPTION CATEGORY
+  const createOptionCategory = (categories) => {
+    return categories.map((category) => {
+      return (
+        <option key={category.id} value={category.id}>
+          {category.categoryName}
+        </option>
+      );
+    });
+  };
+
+  // Tạo options price
+  const createOptionPrice = (optionsPrice) => {
+    return optionsPrice.map((option) => {
+      return (
+        <option key={option.value} value={option.value}>
+          {option.title}
+        </option>
+      );
+    });
+  };
   return (
     <Container className="products">
       <h4 className="py-4">
@@ -122,23 +170,21 @@ function ListProduct() {
       </Section>
 
       <Section>
-      <div className="w-100">
+        <div className="w-100">
           <Form.Control type="text" placeholder="Tìm kiếm sản phẩm..." />
         </div>
         <div className="w-100">
           <Form.Select>
-            <option>Tìm kiếm theo loại</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option hidden>Loại</option>
+            <option value="all">All</option>
+            {createOptionCategory(categories)}
           </Form.Select>
         </div>
         <div className="w-100">
           <Form.Select>
-            <option>Mặc định</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option hidden>Giá</option>
+            <option value="all">All</option>
+            {createOptionPrice(optionsPrice)}
           </Form.Select>
         </div>
       </Section>
@@ -166,7 +212,9 @@ function ListProduct() {
         </Table>
       </div>
       <div className="w-100 bg-white rounded-bottom px-2 py-3 d-flex justify-content-between align-items-center">
-        <div>Show 1-20 của 280</div>
+        <div>
+          Show 1-{perPage} của {total} SP
+        </div>
         <div>
           <Pagination>
             <Pagination.Prev />
