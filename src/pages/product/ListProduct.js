@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -18,7 +18,7 @@ import { getProviders } from "../../features/provider/providerSlice";
 import { getColors } from "../../features/color/colorSlice";
 import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
-import OffcanvasFrame from "../../components/OffcanvasFrame";
+import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
 
 const optionsPrice = [
   {
@@ -47,19 +47,6 @@ const optionsPrice = [
   },
 ];
 function ListProduct() {
-  // REACT
-  const [product, setProduct] = useState({
-    name: "",
-    price: 0,
-    description: "",
-    discount: 0,
-    categoryId: "",
-    providerId: "",
-  });
-
-  const [productItems, setProductItems] = useState([
-    { qtyInStock: 0, image: null, colorId: "", isSpecial: false },
-  ]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -157,151 +144,67 @@ function ListProduct() {
   };
 
   // TẠO OPTION PROVIDER
-  const createOptionProvider = (providers) => {
-    return providers.map((provider) => {
-      return (
-        <option key={provider.id} value={provider.id}>
-          {provider.providerName}
-        </option>
-      );
-    });
-  };
+  const createOptionProvider = useCallback(
+    (providers) => {
+      return providers.map((provider) => {
+        return (
+          <option key={provider.id} value={provider.id}>
+            {provider.providerName}
+          </option>
+        );
+      });
+    },
+    [providers]
+  );
   // TẠO OPTION COLOR
-  const createOptionColor = (colors) => {
-    return colors.map((color) => {
-      return (
-        <option key={color.id} value={color.id}>
-          {color.value}
-        </option>
-      );
-    });
-  };
+  const createOptionColor = useCallback(
+    (colors) => {
+      return colors.map((color) => {
+        return (
+          <option key={color.id} value={color.id}>
+            {color.value}
+          </option>
+        );
+      });
+    },
+    [colors]
+  );
 
   // Tạo options price
-  const createOptionPrice = (optionsPrice) => {
-    return optionsPrice.map((option) => {
-      return (
-        <option key={option.value} value={option.value}>
-          {option.title}
-        </option>
-      );
-    });
-  };
+  const createOptionPrice = useCallback(
+    (optionsPrice) => {
+      return optionsPrice.map((option) => {
+        return (
+          <option key={option.value} value={option.value}>
+            {option.title}
+          </option>
+        );
+      });
+    },
+    [optionsPrice]
+  );
 
   // BUTTION OffcanvasFrame
-
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   return (
     <Container className="products">
-      <OffcanvasFrame
+      {/* MODAL ADD NEW PRODUCt */}
+      <OffvancasAddProduct
+        optionsCategory={createOptionCategory(categories)}
+        optionsProvider={createOptionProvider(providers)}
+        optionsColor={createOptionColor(colors)}
         show={show}
-        title={"Thêm mới sản phẩm"}
         handleClose={handleClose}
-        className="w-40"
-      >
-        <span className="text-success text-md">Thông tin</span>
-        <hr />
-        <Form>
-          <Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Tên</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Tên sản phẩm..."
-                name="name"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Giá</Form.Label>
-              <Form.Control type="text" placeholder="Giá" name="price" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Mô tả </Form.Label>
-              <Form.Control type="text" placeholder="Giá" name="description" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>% Sales</Form.Label>
-              <Form.Control type="text" placeholder="%Sales" name="discount" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Loại</Form.Label>
-              <Form.Select name="categoryId">
-                <option hidden>Loại</option>
-                {createOptionCategory(categories)}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Nhà cung cấp</Form.Label>
-              <Form.Select name="providerId">
-                <option hidden>Nhà cung cấp</option>
-                {createOptionProvider(providers)}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label className="text-success">Sản phẩm con</Form.Label>
-              <Form.Group>
-                <Row>
-                  <Col>
-                    <Form.Control
-                      type="number"
-                      placeholder="Số lượng"
-                      name="qtyInStock"
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Control
-                      type="file"
-                      name="image"
-                      placeholder="Chọn ảnh"
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Select name="colorId">
-                      <option hidden>Màu SP</option>
-                      {createOptionColor(colors)}
-                    </Form.Select>
-                  </Col>
-                  <Col xl="1" className="d-flex align-items-center">
-                    <OverlayTrigger
-                      placement="top"
-                      delay={{ show: 150, hide: 200 }}
-                      overlay={
-                        <Tooltip id="button-tooltip">
-                          Mô tả: Sản phẩm đặc biệt liên hể để mua
-                        </Tooltip>
-                      }
-                    >
-                      <Form.Check // prettier-ignore
-                        type="switch"
-                        name="isSpecial"
-                      />
-                    </OverlayTrigger>
-                  </Col>
-                  <Col>
-                    <div>
-                      <Button variant="success">Thêm</Button>
-                      <Button variant="danger ms-1">Xóa</Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form.Group>
-            </Form.Group>
-          </Form.Group>
-          <div className="mt-4">
-            <Button variant="success btn-xl" type="submit">
-              Thêm mới
-            </Button>
-            <Button variant="outline-danger ms-3 btn-xl" type="submit">
-              Hủy
-            </Button>
-          </div>
-        </Form>
-      </OffcanvasFrame>
+      />
+
+      {/* PAGE LIST PRODUCTS*/}
       <h4 className="py-4">
         <strong>Products</strong>
       </h4>
+
+      {/* SECTION */}
       <Section>
         <div className="d-flex gap-10">
           <Button variant="outline-secondary btn-xs btn-icon ">
@@ -325,6 +228,7 @@ function ListProduct() {
         </div>
       </Section>
 
+      {/* SECTION */}
       <Section>
         <div className="w-100">
           <Form.Control type="text" placeholder="Tìm kiếm sản phẩm..." />
@@ -351,6 +255,8 @@ function ListProduct() {
           </Form.Select>
         </div>
       </Section>
+
+      {/*Tables  */}
       <div>
         <Table variant="light" responsive className="custom-table mt-4">
           <thead>
@@ -374,6 +280,8 @@ function ListProduct() {
           <tbody>{createRow(products)}</tbody>
         </Table>
       </div>
+
+      {/* Pagination page */}
       <div className="w-100 bg-white rounded-bottom px-2 py-3 d-flex justify-content-between align-items-center">
         <div>
           Show 1-{perPage} của {total} SP
