@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Offcanvas } from "react-bootstrap";
 
 function OffcanvasFrame({ show, handleClose, children, title, className }) {
@@ -17,4 +18,11 @@ function OffcanvasFrame({ show, handleClose, children, title, className }) {
   );
 }
 
+OffcanvasFrame.propTypes = {
+  className: PropTypes.string,
+  show: PropTypes.bool,
+  handleClose: PropTypes.func,
+  children: PropTypes.node,
+  title: PropTypes.string,
+};
 export default OffcanvasFrame;

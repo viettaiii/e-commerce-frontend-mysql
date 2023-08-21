@@ -8,6 +8,7 @@ import {
   Row,
   Tooltip,
 } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function OffvancasAddProduct({
   handleClose,
@@ -30,6 +31,11 @@ function OffvancasAddProduct({
     { qtyInStock: 0, image: null, colorId: "", isSpecial: false },
   ]);
 
+  // Handle product
+  const handleProductChange = (name, value) => {
+    setProduct((prev) => ({ ...prev, [name]: value }));
+  };
+  console.log(product);
   return (
     <OffcanvasFrame
       show={show}
@@ -47,30 +53,70 @@ function OffvancasAddProduct({
               type="text"
               placeholder="Tên sản phẩm..."
               name="name"
+              onChange={(e) =>
+                handleProductChange(e.target.name, e.target.value)
+              }
             />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Giá</Form.Label>
-            <Form.Control type="text" placeholder="Giá" name="price" />
+            <Form.Control
+              type="text"
+              placeholder="Giá"
+              name="price"
+              onChange={(e) => {
+                const price = parseInt(e.target.value);
+                if (price < 0 || price > 100000000)
+                  return toast("Giá sp lớn hon 0 và cần phải bé hơn 100tr");
+                handleProductChange(e.target.name, e.target.value);
+              }}
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Mô tả </Form.Label>
-            <Form.Control type="text" placeholder="Giá" name="description" />
+            <Form.Control
+              type="text"
+              placeholder="Giá"
+              name="description"
+              onChange={(e) =>
+                handleProductChange(e.target.name, e.target.value)
+              }
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>% Sales</Form.Label>
-            <Form.Control type="text" placeholder="%Sales" name="discount" />
+            <Form.Control
+              type="text"
+              placeholder="%Sales"
+              name="discount"
+              onChange={(e) => {
+                const discount = parseInt(e.target.value);
+                if (discount < 0 || discount > 100)
+                  return toast("% Sales chỉ từ 0 - 100");
+                handleProductChange(e.target.name, e.target.value);
+              }}
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Loại</Form.Label>
-            <Form.Select name="categoryId">
+            <Form.Select
+              name="categoryId"
+              onChange={(e) =>
+                handleProductChange(e.target.name, e.target.value)
+              }
+            >
               <option hidden>Loại</option>
               {optionsCategory}
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Nhà cung cấp</Form.Label>
-            <Form.Select name="providerId">
+            <Form.Select
+              name="providerId"
+              onChange={(e) =>
+                handleProductChange(e.target.name, e.target.value)
+              }
+            >
               <option hidden>Nhà cung cấp</option>
               {optionsProvider}
             </Form.Select>
