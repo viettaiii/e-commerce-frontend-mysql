@@ -4,6 +4,7 @@ import {
   Button,
   Col,
   Form,
+  Image,
   OverlayTrigger,
   Row,
   Tooltip,
@@ -53,16 +54,18 @@ function OffvancasAddProduct({
 
   // Xóa 1 product item
   const deleteProductItem = (index) => {
-    if (productItems.length <= 1) return toast("Mỗi sp cần ít nhất sp con!");
+    if (productItems.length <= 1) return toast("Mỗi SP cần ít nhất SP con!");
     setProductItems((prev) => [...prev.filter((_, idx) => idx !== index)]);
   };
 
+  // Xử lí product item change
   const handleProductItemChange = (index, name, value) => {
     const updatedProductItems = [...productItems];
     updatedProductItems[index][name] = value;
     setProductItems(updatedProductItems);
   };
 
+  // Handle add new product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,8 +99,26 @@ function OffvancasAddProduct({
 
     // Thêm mới sản phẩm vào Database
     const newProduct = { ...product, productItems };
-    await dispatch(createProduct(newProduct));
-    await dispatch(getProducts());
+    const { payload } = await dispatch(createProduct(newProduct));
+    if (payload.status === 201) {
+      await dispatch(getProducts());
+      setProduct({
+        name: "",
+        price: 0,
+        description: "",
+        discount: 0,
+        categoryId: "",
+        providerId: "",
+      });
+      setProductItems([
+        {
+          qtyInStock: 0,
+          image: null,
+          colorId: "",
+          isSpecial: false,
+        },
+      ]);
+    }
   };
 
   // TẠO OPTIONS COLORS
@@ -110,6 +131,13 @@ function OffvancasAddProduct({
         </option>
       );
     });
+  };
+
+  // Fake image selected
+  const fakeImage = (file) => {
+    return (
+      <Image className="w-50 h-50" src={URL.createObjectURL(file)} alt="" />
+    );
   };
 
   // TẠO RENDER PRODUCT ITEM
@@ -131,19 +159,40 @@ function OffvancasAddProduct({
                 }}
               />
             </Col>
-            <Col>
-              <Form.Control
-                type="file"
-                name="image"
-                placeholder="Chọn ảnh"
-                onChange={(e) =>
-                  handleProductItemChange(
-                    index,
-                    e.target.name,
-                    e.target.files[0]
-                  )
-                }
-              />
+            <Col xl="2">
+              <Form.Label htmlFor={`product-item-image-${index}`}>
+                {productItem.image &&
+                typeof productItem.image === "object" &&
+                productItem.image !== null ? (
+                  fakeImage(productItem.image)
+                ) : (
+                  <Form.Control
+                    type="file"
+                    id={`product-item-image-${index}`}
+                    name="image"
+                    onChange={(e) =>
+                      handleProductItemChange(
+                        index,
+                        e.target.name,
+                        e.target.files[0]
+                      )
+                    }
+                  />
+                )}
+                <Form.Control
+                  type="file"
+                  id={`product-item-image-${index}`}
+                  name="image"
+                  hidden={true}
+                  onChange={(e) =>
+                    handleProductItemChange(
+                      index,
+                      e.target.name,
+                      e.target.files[0]
+                    )
+                  }
+                />
+              </Form.Label>
             </Col>
             <Col>
               <Form.Select
@@ -199,12 +248,14 @@ function OffvancasAddProduct({
       );
     });
   };
+
   return (
     <OffcanvasFrame
       show={show}
       title={"Thêm mới sản phẩm"}
       handleClose={handleClose}
       className="w-40"
+      onSubmit={handleSubmit}
     >
       <span className="text-success text-md">Thông tin</span>
       <hr />
@@ -295,14 +346,6 @@ function OffvancasAddProduct({
             {renderProductItem(productItems)}
           </Form.Group>
         </Form.Group>
-        <div className="mt-4">
-          <Button variant="success btn-xl" type="submit" onClick={handleSubmit}>
-            Thêm mới
-          </Button>
-          <Button variant="outline-danger ms-3 btn-xl" type="submit">
-            Hủy
-          </Button>
-        </div>
       </Form>
     </OffcanvasFrame>
   );

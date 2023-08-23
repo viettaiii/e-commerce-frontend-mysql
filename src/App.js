@@ -1,6 +1,6 @@
 import ListProduct from "./pages/product/ListProduct";
 import Sidebar from "./components/SideBar";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import { useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
@@ -49,6 +49,8 @@ function App() {
           </div>
         </div>
       </BrowserRouter>
+
+      {/* Toast message */}
       <ToastContainer
         position="top-center"
         autoClose={3000}

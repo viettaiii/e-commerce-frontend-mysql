@@ -23,6 +23,10 @@
     @include flex-gap($gap: 8px);
     align-items: center;
   }
+
+  &.btn-full-w {
+    width: 100%;
+  }
 }
 
 @each $color, $value in $theme-colors {
