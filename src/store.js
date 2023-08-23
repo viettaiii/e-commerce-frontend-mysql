@@ -6,7 +6,7 @@ import categorySlice from "./features/category/categorySlice";
 import providerSlice from "./features/provider/providerSlice";
 import colorSlice from "./features/color/colorSlice";
 import productSlice from "./features/product/productSlice";
-
+import spinnerSlice from "./features/spinnerSlice";
 
 const persistConfig = {
   key: "root",
@@ -19,6 +19,7 @@ const rootReducer = combineReducers({
   provider: providerSlice,
   color: colorSlice,
   product: productSlice,
+  spinner: spinnerSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
