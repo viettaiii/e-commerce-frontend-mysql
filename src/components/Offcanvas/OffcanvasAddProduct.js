@@ -9,14 +9,21 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { handleFiles } from "../../utils/handleFile";
+import { useDispatch } from "react-redux";
+import {
+  createProduct,
+  getProducts,
+} from "../../features/product/productSlice";
 
 function OffvancasAddProduct({
   handleClose,
   show,
   optionsCategory,
   optionsProvider,
-  optionsColor,
+  colors,
 }) {
+  const dispatch = useDispatch();
   // REACT
   const [product, setProduct] = useState({
     name: "",
@@ -35,7 +42,163 @@ function OffvancasAddProduct({
   const handleProductChange = (name, value) => {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
-  console.log(product);
+
+  // Thêm 1 product item
+  const addProductItem = () => {
+    setProductItems((prev) => [
+      ...prev,
+      { qtyInStock: 0, image: null, colorId: "", isSpecial: false },
+    ]);
+  };
+
+  // Xóa 1 product item
+  const deleteProductItem = (index) => {
+    if (productItems.length <= 1) return toast("Mỗi sp cần ít nhất sp con!");
+    setProductItems((prev) => [...prev.filter((_, idx) => idx !== index)]);
+  };
+
+  const handleProductItemChange = (index, name, value) => {
+    const updatedProductItems = [...productItems];
+    updatedProductItems[index][name] = value;
+    setProductItems(updatedProductItems);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate product
+    const { name, price, description, providerId, categoryId } = product;
+    if (!name) return toast("Tên SP yêu cầu có!");
+    if (!price) return toast("Giá yêu cầu có!");
+    if (!description) return toast("Mô tả SP yêu cầu có!");
+    if (!providerId) return toast("Nhà cung cấp SP yêu cầu có!");
+    if (!categoryId) return toast("Loại SP yêu cầu có!");
+
+    // Validate product items
+    let err = null;
+    productItems.forEach((productItem, index) => {
+      const { qtyInStock, image, colorId } = productItem;
+      if (!qtyInStock) return (err = `Số lượng SP ${index + 1} yêu cầu có!`);
+      if (!image) return (err = `Ảnh SP ${index + 1} yêu cầu có!`);
+      if (!colorId) return (err = `Màu SP ${index + 1} yêu cầu có!`);
+    });
+    if (err) return toast(err);
+
+    // Xử lí ảnh
+    const listImage = await handleFiles(
+      productItems.map((productItem) => productItem.image)
+    );
+
+    product.image = listImage[0];
+    productItems.forEach(
+      (productItem, index) => (productItem.image = listImage[index])
+    );
+
+    // Thêm mới sản phẩm vào Database
+    const newProduct = { ...product, productItems };
+    await dispatch(createProduct(newProduct));
+    await dispatch(getProducts());
+  };
+
+  // TẠO OPTIONS COLORS
+  const createOptionColor = (colors) => {
+    return colors.map((color) => {
+      const disabled = productItems.find((item) => item.colorId === color.id);
+      return (
+        <option key={color.id} disabled={disabled} value={color.id}>
+          {color.value}
+        </option>
+      );
+    });
+  };
+
+  // TẠO RENDER PRODUCT ITEM
+  const renderProductItem = (productItems) => {
+    return productItems.map((productItem, index) => {
+      return (
+        <Form.Group key={index} className="mt-1">
+          <Row>
+            <Col>
+              <Form.Control
+                type="number"
+                placeholder="Số lượng"
+                name="qtyInStock"
+                value={productItem.qtyInStock}
+                onChange={(e) => {
+                  const qtyInStock = parseInt(e.target.value);
+                  if (qtyInStock <= 0) toast("SL cần phải lớn hơn 1 sp!");
+                  handleProductItemChange(index, e.target.name, qtyInStock);
+                }}
+              />
+            </Col>
+            <Col>
+              <Form.Control
+                type="file"
+                name="image"
+                placeholder="Chọn ảnh"
+                onChange={(e) =>
+                  handleProductItemChange(
+                    index,
+                    e.target.name,
+                    e.target.files[0]
+                  )
+                }
+              />
+            </Col>
+            <Col>
+              <Form.Select
+                name="colorId"
+                value={productItem.colorId}
+                onChange={(e) =>
+                  handleProductItemChange(index, e.target.name, e.target.value)
+                }
+              >
+                <option hidden>Màu SP</option>
+                {createOptionColor(colors)}
+              </Form.Select>
+            </Col>
+            <Col xl="1" className="d-flex align-items-center">
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 150, hide: 200 }}
+                overlay={
+                  <Tooltip id="button-tooltip">
+                    Mô tả: Sản phẩm đặc biệt liên hể để mua
+                  </Tooltip>
+                }
+              >
+                <Form.Check // prettier-ignore
+                  type="switch"
+                  name="isSpecial"
+                  value={productItem.isSpecial}
+                  onChange={(e) =>
+                    handleProductItemChange(
+                      index,
+                      e.target.name,
+                      e.target.checked
+                    )
+                  }
+                />
+              </OverlayTrigger>
+            </Col>
+            <Col>
+              <div>
+                <Button variant="success" onClick={addProductItem}>
+                  Thêm
+                </Button>
+                <Button
+                  variant="danger ms-1"
+                  onClick={() => deleteProductItem(index)}
+                >
+                  Xóa
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Form.Group>
+      );
+    });
+  };
   return (
     <OffcanvasFrame
       show={show}
@@ -53,6 +216,7 @@ function OffvancasAddProduct({
               type="text"
               placeholder="Tên sản phẩm..."
               name="name"
+              value={product.name}
               onChange={(e) =>
                 handleProductChange(e.target.name, e.target.value)
               }
@@ -64,6 +228,7 @@ function OffvancasAddProduct({
               type="text"
               placeholder="Giá"
               name="price"
+              value={product.price}
               onChange={(e) => {
                 const price = parseInt(e.target.value);
                 if (price < 0 || price > 100000000)
@@ -78,6 +243,7 @@ function OffvancasAddProduct({
               type="text"
               placeholder="Giá"
               name="description"
+              value={product.description}
               onChange={(e) =>
                 handleProductChange(e.target.name, e.target.value)
               }
@@ -89,6 +255,7 @@ function OffvancasAddProduct({
               type="text"
               placeholder="%Sales"
               name="discount"
+              value={product.discount}
               onChange={(e) => {
                 const discount = parseInt(e.target.value);
                 if (discount < 0 || discount > 100)
@@ -101,6 +268,7 @@ function OffvancasAddProduct({
             <Form.Label>Loại</Form.Label>
             <Form.Select
               name="categoryId"
+              value={product.categoryId}
               onChange={(e) =>
                 handleProductChange(e.target.name, e.target.value)
               }
@@ -113,6 +281,7 @@ function OffvancasAddProduct({
             <Form.Label>Nhà cung cấp</Form.Label>
             <Form.Select
               name="providerId"
+              value={product.providerId}
               onChange={(e) =>
                 handleProductChange(e.target.name, e.target.value)
               }
@@ -123,56 +292,11 @@ function OffvancasAddProduct({
           </Form.Group>
           <Form.Group>
             <Form.Label className="text-success">Sản phẩm con</Form.Label>
-            <Form.Group>
-              <Row>
-                <Col>
-                  <Form.Control
-                    type="number"
-                    placeholder="Số lượng"
-                    name="qtyInStock"
-                  />
-                </Col>
-                <Col>
-                  <Form.Control
-                    type="file"
-                    name="image"
-                    placeholder="Chọn ảnh"
-                  />
-                </Col>
-                <Col>
-                  <Form.Select name="colorId">
-                    <option hidden>Màu SP</option>
-                    {optionsColor}
-                  </Form.Select>
-                </Col>
-                <Col xl="1" className="d-flex align-items-center">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={{ show: 150, hide: 200 }}
-                    overlay={
-                      <Tooltip id="button-tooltip">
-                        Mô tả: Sản phẩm đặc biệt liên hể để mua
-                      </Tooltip>
-                    }
-                  >
-                    <Form.Check // prettier-ignore
-                      type="switch"
-                      name="isSpecial"
-                    />
-                  </OverlayTrigger>
-                </Col>
-                <Col>
-                  <div>
-                    <Button variant="success">Thêm</Button>
-                    <Button variant="danger ms-1">Xóa</Button>
-                  </div>
-                </Col>
-              </Row>
-            </Form.Group>
+            {renderProductItem(productItems)}
           </Form.Group>
         </Form.Group>
         <div className="mt-4">
-          <Button variant="success btn-xl" type="submit">
+          <Button variant="success btn-xl" type="submit" onClick={handleSubmit}>
             Thêm mới
           </Button>
           <Button variant="outline-danger ms-3 btn-xl" type="submit">

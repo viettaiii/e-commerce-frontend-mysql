@@ -1,4 +1,4 @@
-import httpRequest from "../../api/httpRequest";
+import httpRequest from "../api/httpRequest";
 
 export const handleFiles = async (files) => {
   try {

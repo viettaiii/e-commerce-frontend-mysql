@@ -84,10 +84,10 @@ function ListProduct() {
           <td>
             <Form.Check className="mt-1" type="checkbox" name={product.name} />
           </td>
-          <td>
+          <td className="  w-20 h-20">
             <div className="d-flex gap-1 align-items-center">
-              <span className="me-1">
-                <Image src={product.image} roundedCircle />
+              <span className="me-1 w-10 h-10">
+                <Image src={product.image}  roundedCircle />
               </span>
               <OverlayTrigger
                 placement="top"
@@ -157,18 +157,7 @@ function ListProduct() {
     [providers]
   );
   // TẠO OPTION COLOR
-  const createOptionColor = useCallback(
-    (colors) => {
-      return colors.map((color) => {
-        return (
-          <option key={color.id} value={color.id}>
-            {color.value}
-          </option>
-        );
-      });
-    },
-    [colors]
-  );
+ 
 
   // Tạo options price
   const createOptionPrice = useCallback(
@@ -184,7 +173,7 @@ function ListProduct() {
     [optionsPrice]
   );
 
-  // BUTTION OffcanvasFrame
+  // button actions
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -194,7 +183,7 @@ function ListProduct() {
       <OffvancasAddProduct
         optionsCategory={createOptionCategory(categories)}
         optionsProvider={createOptionProvider(providers)}
-        optionsColor={createOptionColor(colors)}
+        colors={colors}
         show={show}
         handleClose={handleClose}
       />
