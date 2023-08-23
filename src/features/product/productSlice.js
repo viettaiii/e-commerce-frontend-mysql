@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getProductsAsync, createProductAsync } from "./productThunk";
+import {
+  getProductsAsync,
+  createProductAsync,
+  deleteProductAsync,deleteManyProductAsync
+} from "./productThunk";
 import { toast } from "react-toastify";
 const initialState = {
   products: [],
@@ -24,6 +28,22 @@ export const createProduct = createAsyncThunk(
     return await createProductAsync("/products", inputs, thunkAPI);
   }
 );
+
+// Delete one product
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (slug, thunkAPI) => {
+    return await deleteProductAsync("/products/" + slug, thunkAPI);
+  }
+);
+
+// Delete many product
+export const deleteManyProduct = createAsyncThunk(
+  "products/deleteManyProduct",
+  async (slugs, thunkAPI) => {
+    return await deleteManyProductAsync("/products/delete-many", slugs, thunkAPI);
+  }
+);
 const productSlice = createSlice({
   name: "product",
   initialState,
@@ -36,7 +56,7 @@ const productSlice = createSlice({
     builder.addCase(getProducts.fulfilled, (state, action) => {
       state.isLoading = state.isError = false;
       state.products = action.payload.data;
-   
+
       state.page = action.payload.page;
       state.perPage = action.payload.perPage;
       state.totalPages = action.payload.totalPages;
@@ -55,6 +75,32 @@ const productSlice = createSlice({
       toast(action.payload.message);
     });
     builder.addCase(createProduct.rejected, (state, action) => {
+      state.isLoading = state.isError = true;
+      toast(action.payload.message);
+    });
+
+    // CASE delete product
+    builder.addCase(deleteProduct.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteProduct.fulfilled, (state, action) => {
+      state.isLoading = state.isError = false;
+      toast(action.payload.message);
+    });
+    builder.addCase(deleteProduct.rejected, (state, action) => {
+      state.isLoading = state.isError = true;
+      toast(action.payload.message);
+    });
+
+    // CASE delete many product
+    builder.addCase(deleteManyProduct.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteManyProduct.fulfilled, (state, action) => {
+      state.isLoading = state.isError = false;
+      toast(action.payload.message);
+    });
+    builder.addCase(deleteManyProduct.rejected, (state, action) => {
       state.isLoading = state.isError = true;
       toast(action.payload.message);
     });

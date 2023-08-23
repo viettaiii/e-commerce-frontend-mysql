@@ -1,24 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Button,
-  Col,
   Container,
   Form,
   Image,
+  Modal,
   OverlayTrigger,
   Pagination,
-  Row,
   Table,
   Tooltip,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../features/product/productSlice";
+import {
+  deleteManyProduct,
+  deleteProduct,
+  getProducts,
+} from "../../features/product/productSlice";
 import { getCategories } from "../../features/category/categorySlice";
 import { getProviders } from "../../features/provider/providerSlice";
 import { getColors } from "../../features/color/colorSlice";
 import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
 import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
+import { setSpinner } from "../../features/spinnerSlice";
 
 const optionsPrice = [
   {
@@ -67,6 +71,55 @@ function ListProduct() {
   const { providers } = useSelector((store) => store.provider);
   const { colors } = useSelector((store) => store.color);
 
+  // DELETE PRODUCT
+  const [slugsDelete, setSlugsDelete] = useState([]);
+  const [slugProduct, setSlugProduct] = useState(null);
+  const [isModal, setIsModal] = useState(false);
+  // Handle check box select
+  const handleCheckBoxChange = (e) => {
+    const isSelected = slugsDelete.find((slug) => slug === e.target.value);
+    if (isSelected) {
+      setSlugsDelete((prev) => [
+        ...prev.filter((slug) => slug !== e.target.value),
+      ]);
+      return;
+    }
+    setSlugsDelete((prev) => [...prev, e.target.value]);
+  };
+
+  console.log(slugsDelete);
+  // handle delete many product
+
+  const handleDeleteManyProduct = async (slugsDelete) => {
+    setSlugsDelete([]);
+    const { payload } = await dispatch(deleteManyProduct(slugsDelete));
+    if (payload.status === 200) {
+      dispatch(getProducts());
+    }
+  };
+
+  // delete one product
+  const handleDeleteProduct = async (slugProduct) => {
+    setSlugProduct(null);
+    const { payload } = await dispatch(deleteProduct(slugProduct));
+    if (payload.status === 200) {
+      dispatch(getProducts());
+    }
+  };
+
+  // handle modal delete product
+  const handleModalDeleteProduct = () => {
+    setIsModal(false);
+    dispatch(setSpinner(true));
+    if (slugProduct) {
+      handleDeleteProduct(slugProduct);
+    } else if (slugsDelete.length > 0) {
+      handleDeleteManyProduct(slugsDelete);
+    }
+    dispatch(setSpinner(false));
+  };
+
+  // ============================== RENDER REACTJS ===================================
   // TẠO STATUS
   const createStatus = (inventoryCount) => {
     let status = "selling";
@@ -79,15 +132,23 @@ function ListProduct() {
   // TẠO ROWS TABLES PRODUCT
   const createRow = (products) => {
     return products.map((product) => {
+      const isChecked = slugsDelete.includes(product.slug);
       return (
         <tr key={product.id}>
           <td>
-            <Form.Check className="mt-1" type="checkbox" name={product.name} />
+            <Form.Check
+              className="mt-1"
+              type="checkbox"
+              name={product.name}
+              value={product.slug}
+              checked={isChecked}
+              onChange={handleCheckBoxChange}
+            />
           </td>
           <td className="  w-20 h-20">
             <div className="d-flex gap-1 align-items-center">
               <span className="me-1 w-10 h-10">
-                <Image src={product.image}  roundedCircle />
+                <Image src={product.image} roundedCircle />
               </span>
               <OverlayTrigger
                 placement="top"
@@ -124,7 +185,13 @@ function ListProduct() {
           <td>
             <div className="d-flex gap-3">
               <span className="mdi mdi-note-edit-outline icon-md hover-color-success"></span>
-              <span className="mdi mdi-trash-can-outline icon-md hover-color-success"></span>
+              <span
+                className="mdi mdi-trash-can-outline icon-md hover-color-success"
+                onClick={() => {
+                  setIsModal(true);
+                  setSlugProduct(product.slug);
+                }}
+              ></span>
             </div>
           </td>
         </tr>
@@ -157,7 +224,6 @@ function ListProduct() {
     [providers]
   );
   // TẠO OPTION COLOR
- 
 
   // Tạo options price
   const createOptionPrice = useCallback(
@@ -206,13 +272,16 @@ function ListProduct() {
           </Button>
         </div>
         <div className="d-flex gap-10">
-          <Button variant="danger btn-xl btn-icon">
+          <Button
+            variant="danger btn-xl btn-icon"
+            onClick={() => setIsModal(true)}
+          >
             <span className="mdi mdi-trash-can-outline icon-md "></span>
-            <span>Xóa SP</span>
+            <span>Xóa</span>
           </Button>
           <Button variant="success btn-xl btn-icon ms-2" onClick={handleShow}>
             <span className="mdi mdi-plus icon-md "></span>
-            <span>Thêm SP</span>
+            <span>Thêm</span>
           </Button>
         </div>
       </Section>
@@ -251,10 +320,23 @@ function ListProduct() {
           <thead>
             <tr>
               <th>
-                <Form.Check type="checkbox" name="selectAll" />
+                <Form.Check
+                  type="checkbox"
+                  name="selectAll"
+                  checked={
+                    products.length > 0 &&
+                    slugsDelete.length === products.length
+                  }
+                  onChange={() => {
+                    const isSelectedAll = slugsDelete.length > 0;
+                    if (isSelectedAll) return setSlugsDelete([]);
+                    const slugs = products.map((product) => product.slug);
+                    setSlugsDelete(slugs);
+                  }}
+                />
               </th>
-              <th>Tên SP</th>
-              <th>Loại SP</th>
+              <th>Tên</th>
+              <th>Loại</th>
               <th>Nhà cung cấp</th>
               <th>Giá</th>
               <th>Giá sale</th>
@@ -273,7 +355,7 @@ function ListProduct() {
       {/* Pagination page */}
       <div className="w-100 bg-white rounded-bottom px-2 py-3 d-flex justify-content-between align-items-center">
         <div>
-          Show 1-{perPage} của {total} SP
+          Show 1-{perPage} của {total}
         </div>
         <div>
           <Pagination>
@@ -289,6 +371,39 @@ function ListProduct() {
           </Pagination>
         </div>
       </div>
+
+      {/* Modal comfirm delete product*/}
+      <Modal
+        show={isModal}
+        size="xs"
+        onHide={() => setIsModal(false)}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Xóa sản phẩm
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5 className="text-danger">Bạn có chắc là muốn xóa sản phẩm này</h5>
+          <p>Sản phẩm này không thể khôi phục sau khi bạn đã xóa!</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="success btn-md px-5"
+            onClick={handleModalDeleteProduct}
+          >
+            Xóa
+          </Button>
+          <Button
+            variant="outline-danger btn-md"
+            onClick={() => setIsModal(false)}
+          >
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

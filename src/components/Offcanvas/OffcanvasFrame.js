@@ -10,7 +10,6 @@ function OffcanvasFrame({
   className,
   onSubmit,
 }) {
-  const { isLoading } = useSelector((store) => store.product);
   return (
     <Offcanvas
       show={show}
@@ -25,10 +24,9 @@ function OffcanvasFrame({
       <Offcanvas.Body>{children}</Offcanvas.Body>
       <div className="mt-4 d-flex gap-2 bg-white p-2 py-4 shadow-lg">
         <Button
-          variant="success btn-xl btn-full-w"
+          variant="success btn-xl btn-full-w d-flex gap-2 "
           type="submit"
           onClick={onSubmit}
-          disabled={isLoading}
         >
           Thêm mới
         </Button>

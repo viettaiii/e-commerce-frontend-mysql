@@ -14,5 +14,5 @@ const spinnerSlice = createSlice({
   },
 });
 
-export const { setLoading } = spinnerSlice.actions;
+export const { setSpinner } = spinnerSlice.actions;
 export default spinnerSlice.reducer;
