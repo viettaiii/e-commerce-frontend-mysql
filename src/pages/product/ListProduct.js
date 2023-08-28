@@ -23,6 +23,8 @@ import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
 import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
 import { setSpinner } from "../../features/spinnerSlice";
+import { Link } from "react-router-dom";
+import OffvancasEditProduct from "../../components/Offcanvas/OffcanvasEditProduct";
 
 const optionsPrice = [
   {
@@ -87,7 +89,6 @@ function ListProduct() {
     setSlugsDelete((prev) => [...prev, e.target.value]);
   };
 
-  console.log(slugsDelete);
   // handle delete many product
 
   const handleDeleteManyProduct = async (slugsDelete) => {
@@ -148,7 +149,14 @@ function ListProduct() {
           <td className="  w-20 h-20">
             <div className="d-flex gap-1 align-items-center">
               <span className="me-1 w-10 h-10">
-                <Image src={product.image} roundedCircle />
+                <Image
+                  src={
+                    process.env.REACT_APP_BACKEND_UPLOAD_URL +
+                    "/" +
+                    product.image
+                  }
+                  roundedCircle
+                />
               </span>
               <OverlayTrigger
                 placement="top"
@@ -184,7 +192,13 @@ function ListProduct() {
           </td>
           <td>
             <div className="d-flex gap-3">
-              <span className="mdi mdi-note-edit-outline icon-md hover-color-success"></span>
+              <span
+                className="mdi mdi-note-edit-outline icon-md hover-color-success"
+                onClick={() => {
+                  handleShowEdit();
+                  setSlugProduct(product.slug);
+                }}
+              ></span>
               <span
                 className="mdi mdi-trash-can-outline icon-md hover-color-success"
                 onClick={() => {
@@ -243,6 +257,12 @@ function ListProduct() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [showEdit, setShowEdit] = useState(false);
+  const handleCloseEdit = () => {
+    setShowEdit(false);
+    setSlugProduct(null);
+  };
+  const handleShowEdit = () => setShowEdit(true);
   return (
     <Container className="products">
       {/* MODAL ADD NEW PRODUCt */}
@@ -252,6 +272,15 @@ function ListProduct() {
         colors={colors}
         show={show}
         handleClose={handleClose}
+      />
+
+      <OffvancasEditProduct
+        optionsCategory={createOptionCategory(categories)}
+        optionsProvider={createOptionProvider(providers)}
+        colors={colors}
+        show={showEdit}
+        slug={slugProduct}
+        handleClose={handleCloseEdit}
       />
 
       {/* PAGE LIST PRODUCTS*/}

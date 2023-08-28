@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getProductsAsync,
   createProductAsync,
-  deleteProductAsync,deleteManyProductAsync
+  deleteProductAsync,
+  deleteManyProductAsync,
+  updateProductAsync,
 } from "./productThunk";
 import { toast } from "react-toastify";
 const initialState = {
@@ -29,6 +31,14 @@ export const createProduct = createAsyncThunk(
   }
 );
 
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async ({ slug, inputs }, thunkAPI) => {
+    console.log(inputs)
+    return await updateProductAsync("/products/" + slug, inputs, thunkAPI);
+  }
+);
+
 // Delete one product
 export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
@@ -41,7 +51,11 @@ export const deleteProduct = createAsyncThunk(
 export const deleteManyProduct = createAsyncThunk(
   "products/deleteManyProduct",
   async (slugs, thunkAPI) => {
-    return await deleteManyProductAsync("/products/delete-many", slugs, thunkAPI);
+    return await deleteManyProductAsync(
+      "/products/delete-many",
+      slugs,
+      thunkAPI
+    );
   }
 );
 const productSlice = createSlice({
@@ -101,6 +115,18 @@ const productSlice = createSlice({
       toast(action.payload.message);
     });
     builder.addCase(deleteManyProduct.rejected, (state, action) => {
+      state.isLoading = state.isError = true;
+      toast(action.payload.message);
+    });
+    // CASE delete many product
+    builder.addCase(updateProduct.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProduct.fulfilled, (state, action) => {
+      state.isLoading = state.isError = false;
+      toast(action.payload.message);
+    });
+    builder.addCase(updateProduct.rejected, (state, action) => {
       state.isLoading = state.isError = true;
       toast(action.payload.message);
     });

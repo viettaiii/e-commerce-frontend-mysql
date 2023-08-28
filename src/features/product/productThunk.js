@@ -26,6 +26,14 @@ export const deleteProductAsync = async (url, inputs, thunkAPI) => {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 };
+export const updateProductAsync = async (url, inputs, thunkAPI) => {
+  try {
+    const { data } = await httpRequest.patch(url, inputs);
+    return data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+};
 
 export const deleteManyProductAsync = async (url, slugs, thunkAPI) => {
   try {
