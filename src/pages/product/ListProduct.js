@@ -304,6 +304,7 @@ function ListProduct() {
           <Button
             variant="danger btn-xl btn-icon"
             onClick={() => setIsModal(true)}
+            disabled={slugsDelete.length <= 0}
           >
             <span className="mdi mdi-trash-can-outline icon-md "></span>
             <span>Xóa</span>
