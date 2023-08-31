@@ -13,6 +13,12 @@ const initialState = {
   perPage: 6,
   totalPages: 1,
   total: 2,
+  query: {
+    name: null,
+    categoryName: null,
+    providerName: null,
+    sort: null,
+  },
   isLoading: false,
   isError: false,
 };
@@ -34,7 +40,7 @@ export const createProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ slug, inputs }, thunkAPI) => {
-    console.log(inputs)
+    console.log(inputs);
     return await updateProductAsync("/products/" + slug, inputs, thunkAPI);
   }
 );
@@ -61,7 +67,17 @@ export const deleteManyProduct = createAsyncThunk(
 const productSlice = createSlice({
   name: "product",
   initialState,
-  reducers: {},
+  reducers: {
+    setQueryProduct: (state, action) => {
+      const value =
+        action.payload.value === "all" ? null : action.payload.value;
+      state.query = {
+        ...state.query,
+        [action.payload.name]: value,
+      };
+    },
+  },
+
   extraReducers: (builder) => {
     // CASE GET ALL PRODUCTS
     builder.addCase(getProducts.pending, (state, action) => {
@@ -133,5 +149,5 @@ const productSlice = createSlice({
   },
 });
 
-export const {} = productSlice.actions;
+export const { setQueryProduct } = productSlice.actions;
 export default productSlice.reducer;

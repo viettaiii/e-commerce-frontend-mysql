@@ -10,11 +10,13 @@ import {
   Table,
   Tooltip,
 } from "react-bootstrap";
+import { useDebounce } from "@uidotdev/usehooks";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteManyProduct,
   deleteProduct,
   getProducts,
+  setQueryProduct,
 } from "../../features/product/productSlice";
 import { getCategories } from "../../features/category/categorySlice";
 import { getProviders } from "../../features/provider/providerSlice";
@@ -23,7 +25,6 @@ import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
 import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
 import { setSpinner } from "../../features/spinnerSlice";
-import { Link } from "react-router-dom";
 import OffvancasEditProduct from "../../components/Offcanvas/OffcanvasEditProduct";
 
 const optionsPrice = [
@@ -68,7 +69,9 @@ function ListProduct() {
     dispatch(getColors());
   }, [dispatch]);
   // STORE REDUX
-  const { products, perPage, total } = useSelector((store) => store.product);
+  const { products, perPage, total, query } = useSelector(
+    (store) => store.product
+  );
   const { categories } = useSelector((store) => store.category);
   const { providers } = useSelector((store) => store.provider);
   const { colors } = useSelector((store) => store.color);
@@ -263,6 +266,24 @@ function ListProduct() {
     setSlugProduct(null);
   };
   const handleShowEdit = () => setShowEdit(true);
+
+  // ================ SEARCH PRODUCT ================
+  const debouncedSearchTerm = useDebounce(query, 1000);
+  const [isSearching, setIsSearching] = useState(false);
+  const handleQuery = (e) => {
+    dispatch(setQueryProduct({ name: e.target.name, value: e.target.value }));
+  };
+  
+  useEffect(() => {
+    const executeSearch = async () => {
+      setIsSearching(true);
+      if (debouncedSearchTerm) {
+        await dispatch(getProducts(query));
+      }
+      setIsSearching(false);
+    };
+    executeSearch();
+  }, [debouncedSearchTerm]);
   return (
     <Container className="products">
       {/* MODAL ADD NEW PRODUCt */}
@@ -319,24 +340,30 @@ function ListProduct() {
       {/* SECTION */}
       <Section>
         <div className="w-100">
-          <Form.Control type="text" placeholder="Tìm kiếm sản phẩm..." />
+          <Form.Control
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            name="name"
+            value={query.name}
+            onChange={handleQuery}
+          />
         </div>
         <div className="w-100 ms-1">
-          <Form.Select>
+          <Form.Select name="categoryId" onChange={handleQuery}>
             <option hidden>Loại</option>
             <option value="all">All</option>
             {createOptionCategory(categories)}
           </Form.Select>
         </div>
         <div className="w-100 ms-1">
-          <Form.Select>
+          <Form.Select name="providerId" onChange={handleQuery}>
             <option hidden>Nhà cung cấp</option>
             <option value="all">All</option>
             {createOptionProvider(providers)}
           </Form.Select>
         </div>
         <div className="w-100 ms-1">
-          <Form.Select>
+          <Form.Select name="sort" onChange={handleQuery}>
             <option hidden>Giá</option>
             <option value="all">All</option>
             {createOptionPrice(optionsPrice)}
@@ -378,7 +405,7 @@ function ListProduct() {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>{createRow(products)}</tbody>
+          {isSearching ? "Searching..." : <tbody>{createRow(products)}</tbody>}
         </Table>
       </div>
 
