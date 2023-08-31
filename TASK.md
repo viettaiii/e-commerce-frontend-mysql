@@ -18,6 +18,7 @@ src
                 + Xóa nhiều sản phẩm => OK
 
                 + View chi tiết sản phẩm
+                + pagination => OK
         + Login
             chức năng:
                 + Đăng nhập

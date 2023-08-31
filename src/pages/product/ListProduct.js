@@ -70,7 +70,7 @@ function ListProduct() {
     dispatch(getColors());
   }, [dispatch]);
   // STORE REDUX
-  const { products, perPage, total, query } = useSelector(
+  const { products, perPage, total, query, totalPages } = useSelector(
     (store) => store.product
   );
   const { categories } = useSelector((store) => store.category);
@@ -283,6 +283,7 @@ function ListProduct() {
   const debouncedSearchTerm = useDebounce(query, 1000);
   const [isSearching, setIsSearching] = useState(false);
   const handleQuery = (e) => {
+    setIsSearching(true);
     dispatch(setQueryProduct({ name: e.target.name, value: e.target.value }));
   };
 
@@ -296,6 +297,8 @@ function ListProduct() {
     };
     executeSearch();
   }, [debouncedSearchTerm]);
+
+  console.log(isSearching);
   return (
     <Container className="products">
       {/* MODAL ADD NEW PRODUCt */}
@@ -426,7 +429,11 @@ function ListProduct() {
               <th>Actions</th>
             </tr>
           </thead>
-          {isSearching ? "Searching..." : <tbody>{createRow(products)}</tbody>}
+          {isSearching ? (
+            <div className="d-flex align-content-center justify-content-center">Searching...</div>
+          ) : (
+            <tbody>{createRow(products)}</tbody>
+          )}
         </Table>
       </div>
 
@@ -437,15 +444,38 @@ function ListProduct() {
         </div>
         <div>
           <Pagination>
-            <Pagination.Prev />
-            <Pagination.Item>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item active>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
-            <Pagination.Ellipsis />
-            <Pagination.Item>{20}</Pagination.Item>
-            <Pagination.Next />
+            <Pagination.Prev
+              onClick={() => {
+                setIsSearching(true);
+                let prePage = query.page - 1;
+                if (query.page === 1) {
+                  prePage = totalPages;
+                }
+                dispatch(setQueryProduct({ name: "page", value: prePage }));
+              }}
+            />
+            {Array.from({ length: totalPages }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={query.page === index + 1}
+                onClick={() => {
+                  setIsSearching(true);
+                  dispatch(setQueryProduct({ name: "page", value: index + 1 }));
+                }}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => {
+                setIsSearching(true);
+                let nextPage = query.page + 1;
+                if (query.page === totalPages) {
+                  nextPage = 1;
+                }
+                dispatch(setQueryProduct({ name: "page", value: nextPage }));
+              }}
+            />
           </Pagination>
         </div>
       </div>

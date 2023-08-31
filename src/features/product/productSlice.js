@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 const initialState = {
   products: [],
-  page: 1,
+ 
   perPage: 6,
   totalPages: 1,
   total: 2,
@@ -18,6 +18,7 @@ const initialState = {
     categoryName: null,
     providerName: null,
     sort: null,
+    page: 1,
   },
   isLoading: false,
   isError: false,
@@ -87,7 +88,7 @@ const productSlice = createSlice({
       state.isLoading = state.isError = false;
       state.products = action.payload.data;
 
-      state.page = action.payload.page;
+      state.query.page = action.payload.page;
       state.perPage = action.payload.perPage;
       state.totalPages = action.payload.totalPages;
       state.total = action.payload.total;
