@@ -16,6 +16,8 @@ src
                 + Chức năng lọc => OK
                 + Xóa 1 sản phẩm => OK
                 + Xóa nhiều sản phẩm => OK
+
+                + View chi tiết sản phẩm
         + Login
             chức năng:
                 + Đăng nhập

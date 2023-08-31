@@ -7,8 +7,17 @@ function OffcanvasFrame({
   children,
   title,
   className,
-  onSubmit, 
+  onSubmit,
 }) {
+  let textBtn = (title) => {
+    if (title.startsWith("Edit")) {
+      return "Lưu";
+    }
+    if (title.startsWith("Add")) {
+      return "Thêm";
+    }
+    return "Edit";
+  };
   return (
     <Offcanvas
       show={show}
@@ -22,13 +31,15 @@ function OffcanvasFrame({
       </Offcanvas.Header>
       <Offcanvas.Body>{children}</Offcanvas.Body>
       <div className="mt-4 d-flex gap-2 bg-white p-2 py-4 shadow-lg">
-        <Button
-          variant="success btn-xl btn-full-w"
-          type="submit"
-          onClick={onSubmit}
-        >
-          {title === "Sửa sản phẩm" ? "Lưu" : "Thêm mới"}
-        </Button>
+        {title !== "View" && (
+          <Button
+            variant="success btn-xl btn-full-w"
+            type="submit"
+            onClick={onSubmit}
+          >
+            {textBtn(title)}
+          </Button>
+        )}
         <Button
           variant="outline-danger  btn-xl btn-full-w"
           onClick={handleClose}

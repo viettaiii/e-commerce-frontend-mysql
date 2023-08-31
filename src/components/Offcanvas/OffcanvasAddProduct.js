@@ -252,7 +252,7 @@ function OffvancasAddProduct({
   return (
     <OffcanvasFrame
       show={show}
-      title={"Thêm mới sản phẩm"}
+      title={"Add"}
       handleClose={handleClose}
       className="w-40"
       onSubmit={handleSubmit}

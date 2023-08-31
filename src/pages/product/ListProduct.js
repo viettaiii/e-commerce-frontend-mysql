@@ -26,6 +26,7 @@ import Section from "../../components/Section";
 import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
 import { setSpinner } from "../../features/spinnerSlice";
 import OffvancasEditProduct from "../../components/Offcanvas/OffcanvasEditProduct";
+import OffvancasViewProduct from "../../components/Offcanvas/OffcanvasViewProduct";
 
 const optionsPrice = [
   {
@@ -185,7 +186,13 @@ function ListProduct() {
           <td>{product.inventoryCount}</td>
           <td>{createStatus(product.inventoryCount)}</td>
           <td>
-            <span className="mdi mdi-loupe icon-md hover-color-success"></span>
+            <span
+              className="mdi mdi-loupe icon-md hover-color-success"
+              onClick={() => {
+                setSlugProduct(product.slug);
+                setShowView(true);
+              }}
+            ></span>
           </td>
           <td>
             <span>{formatDate(product.createdAt)}</span>
@@ -261,8 +268,13 @@ function ListProduct() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [showEdit, setShowEdit] = useState(false);
+  const [showView, setShowView] = useState(false);
   const handleCloseEdit = () => {
     setShowEdit(false);
+    setSlugProduct(null);
+  };
+  const handleCloseView = () => {
+    setShowView(false);
     setSlugProduct(null);
   };
   const handleShowEdit = () => setShowEdit(true);
@@ -273,7 +285,7 @@ function ListProduct() {
   const handleQuery = (e) => {
     dispatch(setQueryProduct({ name: e.target.name, value: e.target.value }));
   };
-  
+
   useEffect(() => {
     const executeSearch = async () => {
       setIsSearching(true);
@@ -302,6 +314,15 @@ function ListProduct() {
         show={showEdit}
         slug={slugProduct}
         handleClose={handleCloseEdit}
+      />
+
+      <OffvancasViewProduct
+        optionsCategory={createOptionCategory(categories)}
+        optionsProvider={createOptionProvider(providers)}
+        colors={colors}
+        show={showView}
+        slug={slugProduct}
+        handleClose={handleCloseView}
       />
 
       {/* PAGE LIST PRODUCTS*/}

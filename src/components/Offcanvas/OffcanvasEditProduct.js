@@ -269,7 +269,7 @@ function OffvancasEditProduct({
   return (
     <OffcanvasFrame
       show={show}
-      title={"Sửa sản phẩm"}
+      title={"Edit"}
       handleClose={handleClose}
       className="w-40"
       onSubmit={handleSubmit}
@@ -285,9 +285,7 @@ function OffvancasEditProduct({
               placeholder="Tên sản phẩm..."
               name="name"
               value={product.name}
-              onChange={(e) =>
-                handleProductChange(e.target.name, e.target.value)
-              }
+              disabled={true}
             />
           </Form.Group>
           <Form.Group className="mb-3">
