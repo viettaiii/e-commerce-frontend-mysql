@@ -2,15 +2,33 @@ import ListProduct from "./pages/product/ListProduct";
 import Sidebar from "./components/SideBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingOverlay from "react-loading-overlay";
+import Categories from "./pages/Categories";
+import { useEffect } from "react";
+import { getProducts } from "./features/product/productSlice";
+import { getCategories } from "./features/category/categorySlice";
+import { getProviders } from "./features/provider/providerSlice";
+import { getColors } from "./features/color/colorSlice";
 function App() {
   const { isSideBarOpen } = useSelector((store) => store.sideBar);
   const { isSpinner } = useSelector((store) => store.spinner);
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCategories());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getProviders());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getColors());
+  }, [dispatch]);
   const variantsSideBar = {
     initial: {
       x: -200,
@@ -48,6 +66,7 @@ function App() {
 
               <Routes>
                 <Route path="/admin/products" element={<ListProduct />} />
+                <Route path="/admin/categories" element={<Categories />} />
               </Routes>
             </div>
           </div>

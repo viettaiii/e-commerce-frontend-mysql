@@ -18,9 +18,7 @@ import {
   getProducts,
   setQueryProduct,
 } from "../../features/product/productSlice";
-import { getCategories } from "../../features/category/categorySlice";
-import { getProviders } from "../../features/provider/providerSlice";
-import { getColors } from "../../features/color/colorSlice";
+
 import { formatCurrency, formatDate } from "../../utils/format";
 import Section from "../../components/Section";
 import OffvancasAddProduct from "../../components/Offcanvas/OffcanvasAddProduct";
@@ -57,18 +55,6 @@ const optionsPrice = [
 function ListProduct() {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
-  useEffect(() => {
-    dispatch(getCategories());
-  }, [dispatch]);
-  useEffect(() => {
-    dispatch(getProviders());
-  }, [dispatch]);
-  useEffect(() => {
-    dispatch(getColors());
-  }, [dispatch]);
   // STORE REDUX
   const { products, perPage, total, query, totalPages } = useSelector(
     (store) => store.product
@@ -224,7 +210,7 @@ function ListProduct() {
   };
 
   // TẠO OPTION CATEGORY
-  const createOptionCategory = (categories) => {
+  const createOptionCategory = useCallback((categories) => {
     return categories.map((category) => {
       return (
         <option key={category.id} value={category.id}>
@@ -232,21 +218,18 @@ function ListProduct() {
         </option>
       );
     });
-  };
+  }, []);
 
   // TẠO OPTION PROVIDER
-  const createOptionProvider = useCallback(
-    (providers) => {
-      return providers.map((provider) => {
-        return (
-          <option key={provider.id} value={provider.id}>
-            {provider.providerName}
-          </option>
-        );
-      });
-    },
-    [providers]
-  );
+  const createOptionProvider = useCallback((providers) => {
+    return providers.map((provider) => {
+      return (
+        <option key={provider.id} value={provider.id}>
+          {provider.providerName}
+        </option>
+      );
+    });
+  }, []);
   // TẠO OPTION COLOR
 
   // Tạo options price
@@ -280,7 +263,7 @@ function ListProduct() {
   const handleShowEdit = () => setShowEdit(true);
 
   // ================ SEARCH PRODUCT ================
-  const debouncedSearchTerm = useDebounce(query, 1000);
+  const debouncedSearchTerm = useDebounce(query, 500);
   const [isSearching, setIsSearching] = useState(false);
   const handleQuery = (e) => {
     setIsSearching(true);
@@ -290,15 +273,15 @@ function ListProduct() {
   useEffect(() => {
     const executeSearch = async () => {
       setIsSearching(true);
-      if (debouncedSearchTerm) {
-        await dispatch(getProducts(query));
+      const { name, categoryId, sort, providerId, page } = debouncedSearchTerm;
+      if (name || categoryId || sort || providerId || page) {
+        await dispatch(getProducts(debouncedSearchTerm));
       }
       setIsSearching(false);
     };
     executeSearch();
   }, [debouncedSearchTerm]);
 
-  console.log(isSearching);
   return (
     <Container className="products">
       {/* MODAL ADD NEW PRODUCt */}
@@ -430,7 +413,9 @@ function ListProduct() {
             </tr>
           </thead>
           {isSearching ? (
-            <div className="d-flex align-content-center justify-content-center">Searching...</div>
+            <div className="d-flex align-content-center justify-content-center">
+              Searching...
+            </div>
           ) : (
             <tbody>{createRow(products)}</tbody>
           )}
