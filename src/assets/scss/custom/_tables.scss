@@ -26,17 +26,29 @@
       font-size: 0.8rem;
       line-height: 28px;
 
-      .selling {
+      .selling,
+      .verified {
         background-color: #00800033;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: $success;
         padding: 2px 8px;
         border-radius: 5px;
+        width: 71px;
+        height: 21px;
       }
-      .sold-out {
+      .sold-out,
+      .unverified {
         background-color: #ff000042;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: $danger;
         padding: 2px 8px;
         border-radius: 14px;
+        width: 71px;
+        height: 21px;
       }
     }
   }

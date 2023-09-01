@@ -20,6 +20,14 @@ const sidebarMenu = [
         text: "Categories",
         to: "/admin/categories",
       },
+      {
+        text: "Providers",
+        to: "/admin/providers",
+      },
+      {
+        text: "Customers",
+        to: "/admin/customers",
+      },
     ],
   },
 ];
