@@ -22,6 +22,15 @@ src
         + Login
             chức năng:
                 + Đăng nhập
+        + Customers
+            - page => OK
+            - chức năng
+                + search by name/email => OK
+        + Providers
+            - page => OK
+        + Categories
+            - page => OK
+            - chức năng:
                 
     - Modals
         + ProductAdd 
