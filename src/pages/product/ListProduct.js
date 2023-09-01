@@ -56,7 +56,7 @@ function ListProduct() {
   const dispatch = useDispatch();
 
   // STORE REDUX
-  const { products, perPage, total, query, totalPages } = useSelector(
+  const { products, perPage, total, query, totalPages, page } = useSelector(
     (store) => store.product
   );
   const { categories } = useSelector((store) => store.category);
@@ -273,8 +273,7 @@ function ListProduct() {
   useEffect(() => {
     const executeSearch = async () => {
       setIsSearching(true);
-      const { name, categoryId, sort, providerId, page } = debouncedSearchTerm;
-      if (name || categoryId || sort || providerId || page) {
+      if (debouncedSearchTerm) {
         await dispatch(getProducts(debouncedSearchTerm));
       }
       setIsSearching(false);
@@ -432,20 +431,22 @@ function ListProduct() {
             <Pagination.Prev
               onClick={() => {
                 setIsSearching(true);
-                let prePage = query.page - 1;
-                if (query.page === 1) {
+                let prePage = page - 1;
+                if (page === 1) {
                   prePage = totalPages;
                 }
-                dispatch(setQueryProduct({ name: "page", value: prePage }));
+                dispatch(getProducts({ page: prePage }));
+                setIsSearching(false);
               }}
             />
             {Array.from({ length: totalPages }, (_, index) => (
               <Pagination.Item
                 key={index + 1}
-                active={query.page === index + 1}
+                active={page === index + 1}
                 onClick={() => {
                   setIsSearching(true);
-                  dispatch(setQueryProduct({ name: "page", value: index + 1 }));
+                  dispatch(getProducts({ page: index + 1 }));
+                  setIsSearching(false);
                 }}
               >
                 {index + 1}
@@ -454,11 +455,12 @@ function ListProduct() {
             <Pagination.Next
               onClick={() => {
                 setIsSearching(true);
-                let nextPage = query.page + 1;
-                if (query.page === totalPages) {
+                let nextPage = page + 1;
+                if (page === totalPages) {
                   nextPage = 1;
                 }
-                dispatch(setQueryProduct({ name: "page", value: nextPage }));
+                dispatch(getProducts({ page: nextPage }));
+                setIsSearching(false);
               }}
             />
           </Pagination>
