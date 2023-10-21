@@ -139,14 +139,7 @@ function ListProduct() {
           <td className="  w-20 h-20">
             <div className="d-flex gap-1 align-items-center">
               <span className="me-1 w-10 h-10">
-                <Image
-                  src={
-                    process.env.REACT_APP_BACKEND_UPLOAD_URL +
-                    "/" +
-                    product.image
-                  }
-                  roundedCircle
-                />
+                <Image src={product.image} roundedCircle />
               </span>
               <OverlayTrigger
                 placement="top"

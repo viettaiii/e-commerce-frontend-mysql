@@ -23,4 +23,4 @@ export const formatDate = (time) => {
 };
 
 export const formatCurrency = (x) =>
-  x.toLocaleString("it-IT", { style: "currency", currency: "VND" });
+  x.toLocaleString("it-IT", { style: "currency", currency: "vnd" });

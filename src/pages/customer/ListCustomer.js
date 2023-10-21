@@ -9,7 +9,6 @@ import {
   resetQueryUser,
   setQueryUser,
 } from "../../features/user/userSlice";
-import { resetQueryProduct } from "../../features/product/productSlice";
 function ListCustomer() {
   const { users, totalPages, query, page } = useSelector((store) => store.user);
 

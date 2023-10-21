@@ -16,8 +16,7 @@ src
                 + Chức năng lọc => OK
                 + Xóa 1 sản phẩm => OK
                 + Xóa nhiều sản phẩm => OK
-
-                + View chi tiết sản phẩm
+                + View chi tiết sản phẩm => OK
                 + pagination => OK
         + Login
             chức năng:
@@ -31,7 +30,6 @@ src
         + Categories
             - page => OK
             - chức năng:
-                
     - Modals
         + ProductAdd 
             chức năng:

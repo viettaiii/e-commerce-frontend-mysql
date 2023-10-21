@@ -16,6 +16,7 @@ import {
   createProduct,
   getProducts,
 } from "../../features/product/productSlice";
+import { formatCurrency } from "../../utils/format";
 
 function OffvancasAddProduct({
   handleClose,
@@ -276,12 +277,13 @@ function OffvancasAddProduct({
           <Form.Group className="mb-3">
             <Form.Label>Giá</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Giá"
               name="price"
-              value={product.price}
+              value={formatCurrency(product.price)}
               onChange={(e) => {
                 const price = parseInt(e.target.value);
+        
                 if (price < 0 || price > 100000000)
                   return toast("Giá sp lớn hon 0 và cần phải bé hơn 100tr");
                 handleProductChange(e.target.name, e.target.value);
@@ -292,7 +294,7 @@ function OffvancasAddProduct({
             <Form.Label>Mô tả </Form.Label>
             <Form.Control
               type="text"
-              placeholder="Giá"
+              placeholder="Mô tả"
               name="description"
               value={product.description}
               onChange={(e) =>
